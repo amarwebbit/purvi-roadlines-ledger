@@ -50,15 +50,3 @@
     text-shadow: 0 12px 30px rgba(15, 23, 42, 0.35);
   }
 }
-
-@media print {
-  body {
-    background: #ffffff !important;
-    color: #0f172a;
-  }
-
-  a {
-    color: #0f172a;
-    text-decoration: none;
-  }
-}

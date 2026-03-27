@@ -1,5 +1,5 @@
 ﻿import { useEffect, useMemo, useState } from 'react'
-import { Search, Pencil, Trash2, BadgeCheck, Printer } from 'lucide-react'
+import { Search, Pencil, Trash2, BadgeCheck } from 'lucide-react'
 import toast from 'react-hot-toast'
 import { supabase } from '../lib/supabase.js'
 import Modal from '../components/Modal.jsx'
@@ -311,14 +311,6 @@ export default function Deliveries() {
                   </td>
                   <td className="py-3">
                     <div className="flex flex-wrap gap-2">
-                      <a
-                        href={`/deliveries/${item.id}/print`}
-                        target="_blank"
-                        rel="noreferrer"
-                        className="rounded-lg bg-white/10 px-3 py-1 text-xs font-semibold text-white"
-                      >
-                        <Printer className="inline h-3 w-3" /> Print
-                      </a>
                       <button
                         type="button"
                         onClick={() => openEdit(item)}

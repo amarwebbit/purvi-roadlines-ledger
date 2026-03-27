@@ -279,23 +279,13 @@ export default function OwnerDetail() {
                     </span>
                   </td>
                   <td className="py-3">
-                    <div className="flex flex-wrap gap-2">
-                      <a
-                        href={`/deliveries/${item.id}/print`}
-                        target="_blank"
-                        rel="noreferrer"
-                        className="rounded-lg bg-white/10 px-3 py-1 text-xs font-semibold text-white"
-                      >
-                        <Printer className="inline h-3 w-3" /> Print
-                      </a>
-                      <button
-                        type="button"
-                        onClick={() => markNoDues(item.id, toNumber(item.rate))}
-                        className="rounded-lg bg-emerald-500/20 px-3 py-1 text-xs font-semibold text-emerald-100"
-                      >
-                        Mark No Dues
-                      </button>
-                    </div>
+                    <button
+                      type="button"
+                      onClick={() => markNoDues(item.id, toNumber(item.rate))}
+                      className="rounded-lg bg-emerald-500/20 px-3 py-1 text-xs font-semibold text-emerald-100"
+                    >
+                      Mark No Dues
+                    </button>
                   </td>
                 </tr>
               ))}
@@ -306,4 +296,3 @@ export default function OwnerDetail() {
     </div>
   )
 }
-
