@@ -1,0 +1,64 @@
+﻿@import url('https://fonts.googleapis.com/css2?family=Manrope:wght@300..800&family=Space+Grotesk:wght@400;500;600;700&display=swap');
+@import "tailwindcss";
+
+:root {
+  color-scheme: only light;
+}
+
+@layer base {
+  * {
+    box-sizing: border-box;
+  }
+
+  body {
+    font-family: 'Manrope', 'Space Grotesk', system-ui, -apple-system, sans-serif;
+    background: radial-gradient(1200px 800px at 10% 10%, rgba(56, 189, 248, 0.18), transparent 60%),
+      radial-gradient(1200px 800px at 90% 20%, rgba(251, 191, 36, 0.15), transparent 60%),
+      linear-gradient(180deg, #0b1220 0%, #0f172a 60%, #111827 100%);
+    color: #e2e8f0;
+    min-height: 100vh;
+  }
+
+  h1, h2, h3, h4 {
+    font-family: 'Space Grotesk', 'Manrope', system-ui, sans-serif;
+    letter-spacing: -0.02em;
+  }
+
+  input, select, textarea, button {
+    font-family: inherit;
+  }
+}
+
+@layer utilities {
+  .glass {
+    background: rgba(255, 255, 255, 0.08);
+    backdrop-filter: blur(18px);
+    border: 1px solid rgba(148, 163, 184, 0.24);
+  }
+
+  .glass-light {
+    background: rgba(255, 255, 255, 0.75);
+    backdrop-filter: blur(16px);
+    border: 1px solid rgba(226, 232, 240, 0.9);
+  }
+
+  .gradient-card {
+    background: linear-gradient(135deg, rgba(56, 189, 248, 0.2), rgba(251, 191, 36, 0.2));
+  }
+
+  .text-shadow {
+    text-shadow: 0 12px 30px rgba(15, 23, 42, 0.35);
+  }
+}
+
+@media print {
+  body {
+    background: #ffffff !important;
+    color: #0f172a;
+  }
+
+  a {
+    color: #0f172a;
+    text-decoration: none;
+  }
+}
