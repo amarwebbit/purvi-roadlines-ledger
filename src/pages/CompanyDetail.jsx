@@ -93,6 +93,8 @@ export default function CompanyDetail() {
       'Truck Owner': item.truck_owners?.name || '-',
       Driver: item.driver_name || '-',
       Rate: toNumber(item.rate),
+      Commission: toNumber(item.commission),
+      Munsiyana: toNumber(item.munsiyana),
       'Advance Received': toNumber(item.advance_from_company),
       Balance: toNumber(item.balance_from_company),
       Status: getStatusLabel(item.company_payment_status),

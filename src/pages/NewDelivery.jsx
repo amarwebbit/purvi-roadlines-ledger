@@ -33,6 +33,8 @@ export default function NewDelivery() {
     driver_name: '',
     driver_mobile: '',
     rate: '',
+    commission: '',
+    munsiyana: '',
     advance_to_owner: '',
     advance_from_company: '',
     notes: '',
@@ -96,6 +98,8 @@ export default function NewDelivery() {
       driver_name: form.driver_name,
       driver_mobile: form.driver_mobile,
       rate: rateNum,
+      commission: toNumber(form.commission),
+      munsiyana: toNumber(form.munsiyana),
       advance_to_owner: toNumber(form.advance_to_owner),
       balance_to_owner: ownerCalc.balance,
       owner_payment_status: ownerCalc.status,
@@ -122,6 +126,8 @@ export default function NewDelivery() {
       driver_name: '',
       driver_mobile: '',
       rate: '',
+      commission: '',
+      munsiyana: '',
       advance_to_owner: '',
       advance_from_company: '',
       notes: '',
@@ -293,6 +299,28 @@ export default function NewDelivery() {
               className="mt-2 w-full rounded-xl border border-slate-200 bg-white/80 px-4 py-3 text-slate-900"
               placeholder="0"
               required
+            />
+          </div>
+          <div>
+            <label className="text-xs uppercase tracking-[0.2em] text-slate-300">Commission (₹)</label>
+            <input
+              type="number"
+              min="0"
+              value={form.commission}
+              onChange={(e) => setForm((prev) => ({ ...prev, commission: e.target.value }))}
+              className="mt-2 w-full rounded-xl border border-slate-200 bg-white/80 px-4 py-3 text-slate-900"
+              placeholder="0"
+            />
+          </div>
+          <div>
+            <label className="text-xs uppercase tracking-[0.2em] text-slate-300">Munsiyana (₹)</label>
+            <input
+              type="number"
+              min="0"
+              value={form.munsiyana}
+              onChange={(e) => setForm((prev) => ({ ...prev, munsiyana: e.target.value }))}
+              className="mt-2 w-full rounded-xl border border-slate-200 bg-white/80 px-4 py-3 text-slate-900"
+              placeholder="0"
             />
           </div>
           <div>

@@ -160,6 +160,8 @@ export default function Deliveries() {
       'Truck Owner': item.truck_owners?.name || '-',
       Driver: item.driver_name || '-',
       Rate: toNumber(item.rate),
+      Commission: toNumber(item.commission),
+      Munsiyana: toNumber(item.munsiyana),
       'Advance → Owner': toNumber(item.advance_to_owner),
       'Balance → Owner': toNumber(item.balance_to_owner),
       'Owner Status': getStatusLabel(item.owner_payment_status),
@@ -260,6 +262,8 @@ export default function Deliveries() {
                 <th className="pb-2">Truck Owner</th>
                 <th className="pb-2">Driver</th>
                 <th className="pb-2">Rate</th>
+                <th className="pb-2">Commission</th>
+                <th className="pb-2">Munsiyana</th>
                 <th className="pb-2">Advance → Owner</th>
                 <th className="pb-2">Balance → Owner</th>
                 <th className="pb-2">Owner Status</th>
@@ -272,7 +276,7 @@ export default function Deliveries() {
             <tbody>
               {filtered.length === 0 && (
                 <tr>
-                  <td colSpan="13" className="py-4 text-center text-slate-400">
+                  <td colSpan="15" className="py-4 text-center text-slate-400">
                     No deliveries found.
                   </td>
                 </tr>
@@ -287,6 +291,8 @@ export default function Deliveries() {
                   <td className="py-3">{item.truck_owners?.name}</td>
                   <td className="py-3">{item.driver_name || '-'}</td>
                   <td className="py-3">{formatCurrency(item.rate)}</td>
+                  <td className="py-3">{formatCurrency(item.commission)}</td>
+                  <td className="py-3">{formatCurrency(item.munsiyana)}</td>
                   <td className="py-3">{formatCurrency(item.advance_to_owner)}</td>
                   <td className="py-3">{formatCurrency(Math.max(toNumber(item.balance_to_owner), 0))}</td>
                   <td className="py-3">

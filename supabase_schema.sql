@@ -28,6 +28,8 @@ create table if not exists deliveries (
   driver_name text,
   driver_mobile text,
   rate numeric(12,2) not null default 0,
+  commission numeric(12,2) not null default 0,
+  munsiyana numeric(12,2) not null default 0,
   advance_to_owner numeric(12,2) not null default 0,
   balance_to_owner numeric(12,2) not null default 0,
   owner_payment_status text not null default 'pending' check (owner_payment_status in ('pending','partial','completed')),

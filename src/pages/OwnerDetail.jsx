@@ -127,6 +127,8 @@ export default function OwnerDetail() {
       Company: item.transport_companies?.name || '-',
       Driver: item.driver_name || '-',
       Rate: toNumber(item.rate),
+      Commission: toNumber(item.commission),
+      Munsiyana: toNumber(item.munsiyana),
       'Advance Given': toNumber(item.advance_to_owner),
       Balance: toNumber(item.balance_to_owner),
       Status: getStatusLabel(item.owner_payment_status),
