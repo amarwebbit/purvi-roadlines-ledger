@@ -181,6 +181,8 @@ export default function CompanyDetail() {
                   <th className="pb-2">Truck Owner</th>
                   <th className="pb-2">Driver</th>
                   <th className="pb-2">Rate</th>
+                  <th className="pb-2">Commission</th>
+                  <th className="pb-2">Munsiyana</th>
                   <th className="pb-2">Advance</th>
                   <th className="pb-2">Balance</th>
                   <th className="pb-2">Status</th>
@@ -190,7 +192,7 @@ export default function CompanyDetail() {
               <tbody>
                 {deliveries.length === 0 && (
                   <tr>
-                    <td colSpan="9" className="py-4 text-center text-slate-400">
+                    <td colSpan="11" className="py-4 text-center text-slate-400">
                       No deliveries yet.
                     </td>
                   </tr>
@@ -208,6 +210,8 @@ export default function CompanyDetail() {
                     </td>
                     <td className="py-3">{item.driver_name || '-'}</td>
                     <td className="py-3">{formatCurrency(item.rate)}</td>
+                    <td className="py-3">{formatCurrency(item.commission)}</td>
+                    <td className="py-3">{formatCurrency(item.munsiyana)}</td>
                     <td className="py-3">{formatCurrency(item.advance_from_company)}</td>
                     <td className="py-3">{formatCurrency(Math.max(toNumber(item.balance_from_company), 0))}</td>
                     <td className="py-3">
