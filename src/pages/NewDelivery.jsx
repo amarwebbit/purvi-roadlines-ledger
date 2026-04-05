@@ -29,7 +29,7 @@ export default function NewDelivery() {
   const [form, setForm] = useState({
     delivery_date: new Date().toISOString().slice(0, 10),
     transport_company_id: '',
-    from_location: '',
+    from_location: 'Kanpur',
     to_location: '',
     truck_owner_id: '',
     truck_number: '',
@@ -133,7 +133,7 @@ export default function NewDelivery() {
     toast.success('Delivery saved successfully')
     setForm({
       ...form,
-      from_location: '',
+      from_location: 'Kanpur',
       to_location: '',
       truck_number: '',
       driver_name: '',
@@ -234,7 +234,7 @@ export default function NewDelivery() {
             <input
               type="text"
               value={form.from_location}
-              onChange={(e) => setForm((prev) => ({ ...prev, from_location: e.target.value }))}
+              readOnly
               className="mt-2 w-full rounded-xl border border-slate-200 bg-white/80 px-4 py-3 text-slate-900"
               placeholder="Origin city"
               required
