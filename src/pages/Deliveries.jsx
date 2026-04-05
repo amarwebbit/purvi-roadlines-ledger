@@ -80,7 +80,8 @@ export default function Deliveries() {
 
   const saveEdit = async () => {
     if (!editing) return
-    const ownerCalc = computeBalanceAndStatus(editing.rate, editForm.advance_to_owner)
+    const ownerRate = Math.max(toNumber(editing.rate) - toNumber(editing.commission), 0)
+    const ownerCalc = computeBalanceAndStatus(ownerRate, editForm.advance_to_owner)
     const companyCalc = computeBalanceAndStatus(editing.rate, editForm.advance_from_company)
 
     const { error } = await supabase
@@ -105,10 +106,11 @@ export default function Deliveries() {
   }
 
   const markNoDuesOwner = async (delivery) => {
+    const ownerRate = Math.max(toNumber(delivery.rate) - toNumber(delivery.commission), 0)
     const { error } = await supabase
       .from('deliveries')
       .update({
-        advance_to_owner: toNumber(delivery.rate),
+        advance_to_owner: ownerRate,
         balance_to_owner: 0,
         owner_payment_status: 'completed',
       })
@@ -383,7 +385,12 @@ export default function Deliveries() {
                   <BadgeCheck className="h-4 w-4 text-emerald-500" />
                   Rate: {formatCurrency(editing.rate)}
                 </span>
-                <span>Owner balance: {formatCurrency(Math.max(editing.rate - toNumber(editForm.advance_to_owner), 0))}</span>
+                <span>
+                  Owner balance:{' '}
+                  {formatCurrency(
+                    Math.max(toNumber(editing.rate) - toNumber(editing.commission) - toNumber(editForm.advance_to_owner), 0)
+                  )}
+                </span>
                 <span>
                   Company balance: {formatCurrency(Math.max(editing.rate - toNumber(editForm.advance_from_company), 0))}
                 </span>

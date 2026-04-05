@@ -45,7 +45,10 @@ export default function OwnerDetail() {
   }, [id])
 
   const summary = useMemo(() => {
-    const totalEarnings = deliveries.reduce((sum, item) => sum + toNumber(item.rate), 0)
+    const totalEarnings = deliveries.reduce(
+      (sum, item) => sum + Math.max(toNumber(item.rate) - toNumber(item.commission), 0),
+      0
+    )
     const totalAdvance = deliveries.reduce((sum, item) => sum + toNumber(item.advance_to_owner), 0)
     const totalBalance = deliveries.reduce(
       (sum, item) => sum + Math.max(toNumber(item.balance_to_owner), 0),
@@ -79,15 +82,16 @@ export default function OwnerDetail() {
     return Object.values(map)
   }, [deliveries])
 
-  const markNoDues = async (deliveryId, rate) => {
+  const markNoDues = async (delivery) => {
+    const ownerRate = Math.max(toNumber(delivery.rate) - toNumber(delivery.commission), 0)
     const { error } = await supabase
       .from('deliveries')
       .update({
-        advance_to_owner: rate,
+        advance_to_owner: ownerRate,
         balance_to_owner: 0,
         owner_payment_status: 'completed',
       })
-      .eq('id', deliveryId)
+      .eq('id', delivery.id)
 
     if (error) {
       toast.error('Unable to mark no dues')
@@ -103,7 +107,7 @@ export default function OwnerDetail() {
       supabase
         .from('deliveries')
         .update({
-          advance_to_owner: toNumber(item.rate),
+          advance_to_owner: Math.max(toNumber(item.rate) - toNumber(item.commission), 0),
           balance_to_owner: 0,
           owner_payment_status: 'completed',
         })
@@ -287,7 +291,7 @@ export default function OwnerDetail() {
                   <td className="py-3">
                     <button
                       type="button"
-                      onClick={() => markNoDues(item.id, toNumber(item.rate))}
+                      onClick={() => markNoDues(item)}
                       className="rounded-lg bg-emerald-500/20 px-3 py-1 text-xs font-semibold text-emerald-100"
                     >
                       Mark No Dues

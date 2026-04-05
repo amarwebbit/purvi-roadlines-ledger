@@ -22,6 +22,7 @@ export default function NewDelivery() {
   const [showOwnerModal, setShowOwnerModal] = useState(false)
   const [newCompany, setNewCompany] = useState(initialCompany)
   const [newOwner, setNewOwner] = useState(initialOwner)
+  const [commissionEdited, setCommissionEdited] = useState(false)
 
   const [form, setForm] = useState({
     delivery_date: new Date().toISOString().slice(0, 10),
@@ -64,8 +65,13 @@ export default function NewDelivery() {
   }, [])
 
   const ownerCalc = useMemo(
-    () => computeBalanceAndStatus(form.rate, form.advance_to_owner),
-    [form.rate, form.advance_to_owner]
+    () => {
+      const rateNum = toNumber(form.rate)
+      const commissionNum = toNumber(form.commission)
+      const ownerRate = Math.max(rateNum - commissionNum, 0)
+      return computeBalanceAndStatus(ownerRate, form.advance_to_owner)
+    },
+    [form.rate, form.commission, form.advance_to_owner]
   )
 
   const companyCalc = useMemo(
@@ -82,10 +88,13 @@ export default function NewDelivery() {
     }
 
     const rateNum = toNumber(form.rate)
+    const commissionNum = toNumber(form.commission)
     if (rateNum <= 0) {
       toast.error('Rate should be greater than 0')
       return
     }
+
+    const ownerRate = Math.max(rateNum - commissionNum, 0)
 
     setLoading(true)
     const payload = {
@@ -101,8 +110,8 @@ export default function NewDelivery() {
       commission: toNumber(form.commission),
       munsiyana: toNumber(form.munsiyana),
       advance_to_owner: toNumber(form.advance_to_owner),
-      balance_to_owner: ownerCalc.balance,
-      owner_payment_status: ownerCalc.status,
+      balance_to_owner: computeBalanceAndStatus(ownerRate, form.advance_to_owner).balance,
+      owner_payment_status: computeBalanceAndStatus(ownerRate, form.advance_to_owner).status,
       advance_from_company: toNumber(form.advance_from_company),
       balance_from_company: companyCalc.balance,
       company_payment_status: companyCalc.status,
@@ -132,6 +141,7 @@ export default function NewDelivery() {
       advance_from_company: '',
       notes: '',
     })
+    setCommissionEdited(false)
     setLoading(false)
   }
 
@@ -295,7 +305,15 @@ export default function NewDelivery() {
               type="number"
               min="0"
               value={form.rate}
-              onChange={(e) => setForm((prev) => ({ ...prev, rate: e.target.value }))}
+              onChange={(e) => {
+                const value = e.target.value
+                const rateNum = toNumber(value)
+                setForm((prev) => ({
+                  ...prev,
+                  rate: value,
+                  commission: commissionEdited ? prev.commission : rateNum > 0 ? Math.min(500, rateNum) : '',
+                }))
+              }}
               className="mt-2 w-full rounded-xl border border-slate-200 bg-white/80 px-4 py-3 text-slate-900"
               placeholder="0"
               required
@@ -307,7 +325,10 @@ export default function NewDelivery() {
               type="number"
               min="0"
               value={form.commission}
-              onChange={(e) => setForm((prev) => ({ ...prev, commission: e.target.value }))}
+              onChange={(e) => {
+                setCommissionEdited(true)
+                setForm((prev) => ({ ...prev, commission: e.target.value }))
+              }}
               className="mt-2 w-full rounded-xl border border-slate-200 bg-white/80 px-4 py-3 text-slate-900"
               placeholder="0"
             />
