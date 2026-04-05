@@ -24,7 +24,12 @@ export default function Deliveries() {
   const [dateFrom, setDateFrom] = useState('')
   const [dateTo, setDateTo] = useState('')
   const [editing, setEditing] = useState(null)
-  const [editForm, setEditForm] = useState({ advance_to_owner: '', advance_from_company: '' })
+  const [editForm, setEditForm] = useState({
+    advance_to_owner: '',
+    advance_from_company: '',
+    commission: '',
+    munsiyana: '',
+  })
 
   const loadData = async () => {
     const [deliveryRes, companyRes, ownerRes] = await Promise.all([
@@ -75,13 +80,15 @@ export default function Deliveries() {
     setEditForm({
       advance_to_owner: delivery.advance_to_owner ?? 0,
       advance_from_company: delivery.advance_from_company ?? 0,
+      commission: delivery.commission ?? 0,
+      munsiyana: delivery.munsiyana ?? 0,
     })
   }
 
   const saveEdit = async () => {
     if (!editing) return
     const ownerRate = Math.max(
-      toNumber(editing.rate) - toNumber(editing.commission) - toNumber(editing.munsiyana),
+      toNumber(editing.rate) - toNumber(editForm.commission) - toNumber(editForm.munsiyana),
       0
     )
     const ownerCalc = computeBalanceAndStatus(ownerRate, editForm.advance_to_owner)
@@ -90,6 +97,8 @@ export default function Deliveries() {
     const { error } = await supabase
       .from('deliveries')
       .update({
+        commission: toNumber(editForm.commission),
+        munsiyana: toNumber(editForm.munsiyana),
         advance_to_owner: toNumber(editForm.advance_to_owner),
         balance_to_owner: ownerCalc.balance,
         owner_payment_status: ownerCalc.status,
@@ -375,6 +384,26 @@ export default function Deliveries() {
             />
           </div>
           <div>
+            <label className="text-xs uppercase tracking-[0.2em] text-slate-400">Commission (₹)</label>
+            <input
+              type="number"
+              min="0"
+              value={editForm.commission}
+              onChange={(e) => setEditForm((prev) => ({ ...prev, commission: e.target.value }))}
+              className="mt-2 w-full rounded-xl border border-slate-200 px-4 py-3"
+            />
+          </div>
+          <div>
+            <label className="text-xs uppercase tracking-[0.2em] text-slate-400">Munsiyana (₹)</label>
+            <input
+              type="number"
+              min="0"
+              value={editForm.munsiyana}
+              onChange={(e) => setEditForm((prev) => ({ ...prev, munsiyana: e.target.value }))}
+              className="mt-2 w-full rounded-xl border border-slate-200 px-4 py-3"
+            />
+          </div>
+          <div>
             <label className="text-xs uppercase tracking-[0.2em] text-slate-400">Advance from Company (₹)</label>
             <input
               type="number"
@@ -396,8 +425,8 @@ export default function Deliveries() {
                   {formatCurrency(
                     Math.max(
                       toNumber(editing.rate) -
-                        toNumber(editing.commission) -
-                        toNumber(editing.munsiyana) -
+                        toNumber(editForm.commission) -
+                        toNumber(editForm.munsiyana) -
                         toNumber(editForm.advance_to_owner),
                       0
                     )
