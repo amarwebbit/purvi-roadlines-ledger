@@ -24,6 +24,7 @@ export default function NewDelivery() {
   const [newOwner, setNewOwner] = useState(initialOwner)
   const [commissionEdited, setCommissionEdited] = useState(false)
   const [munsiyanaEdited, setMunsiyanaEdited] = useState(false)
+  const [advanceEdited, setAdvanceEdited] = useState(false)
 
   const [form, setForm] = useState({
     delivery_date: new Date().toISOString().slice(0, 10),
@@ -146,6 +147,7 @@ export default function NewDelivery() {
     })
     setCommissionEdited(false)
     setMunsiyanaEdited(false)
+    setAdvanceEdited(false)
     setLoading(false)
   }
 
@@ -316,7 +318,12 @@ export default function NewDelivery() {
                   ...prev,
                   rate: value,
                   commission: commissionEdited ? prev.commission : rateNum > 0 ? Math.min(500, rateNum) : '',
-                  munsiyana: munsiyanaEdited ? prev.munsiyana : rateNum > 0 ? Math.min(250, rateNum) : '',
+                  munsiyana: munsiyanaEdited ? prev.munsiyana : rateNum > 0 ? Math.min(300, rateNum) : '',
+                  advance_to_owner: advanceEdited
+                    ? prev.advance_to_owner
+                    : rateNum > 0
+                    ? Math.max(rateNum - 1800, 0)
+                    : '',
                 }))
               }}
               className="mt-2 w-full rounded-xl border border-slate-200 bg-white/80 px-4 py-3 text-slate-900"
@@ -358,7 +365,10 @@ export default function NewDelivery() {
               type="number"
               min="0"
               value={form.advance_to_owner}
-              onChange={(e) => setForm((prev) => ({ ...prev, advance_to_owner: e.target.value }))}
+              onChange={(e) => {
+                setAdvanceEdited(true)
+                setForm((prev) => ({ ...prev, advance_to_owner: e.target.value }))
+              }}
               className="mt-2 w-full rounded-xl border border-slate-200 bg-white/80 px-4 py-3 text-slate-900"
               placeholder="0"
             />
