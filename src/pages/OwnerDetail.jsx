@@ -45,17 +45,13 @@ export default function OwnerDetail() {
   }, [id])
 
   const summary = useMemo(() => {
-    const totalEarnings = deliveries.reduce(
-      (sum, item) =>
-        sum + Math.max(toNumber(item.rate) - toNumber(item.commission) - toNumber(item.munsiyana), 0),
-      0
-    )
+    const totalTripsAmount = deliveries.reduce((sum, item) => sum + toNumber(item.rate), 0)
     const totalAdvance = deliveries.reduce((sum, item) => sum + toNumber(item.advance_to_owner), 0)
     const totalBalance = deliveries.reduce(
       (sum, item) => sum + Math.max(toNumber(item.balance_to_owner), 0),
       0
     )
-    return { totalEarnings, totalAdvance, totalBalance }
+    return { totalTripsAmount, totalAdvance, totalBalance }
   }, [deliveries])
 
   const pieData = useMemo(() => {
@@ -196,8 +192,8 @@ export default function OwnerDetail() {
 
       <section className="grid gap-4 md:grid-cols-3">
         {[
-          { label: 'Total Earnings', value: formatCurrency(summary.totalEarnings) },
-          { label: 'Advance Received', value: formatCurrency(summary.totalAdvance) },
+          { label: 'Total Trip Amount', value: formatCurrency(summary.totalTripsAmount) },
+          { label: 'Advance Given', value: formatCurrency(summary.totalAdvance) },
           { label: 'Balance Remaining', value: formatCurrency(summary.totalBalance) },
         ].map((item) => (
           <div key={item.label} className="rounded-2xl bg-white/10 p-5 shadow-lg">
@@ -263,8 +259,8 @@ export default function OwnerDetail() {
                   <span className="text-sm text-slate-200">{item.count} trips</span>
                 </div>
                 <div className="mt-2 grid gap-2 text-xs text-slate-300 sm:grid-cols-2">
-                  <span>Total Net: {formatCurrency(item.totalNet)}</span>
-                  <span>Advance: {formatCurrency(item.totalAdvance)}</span>
+                  <span>Net to Owner: {formatCurrency(item.totalNet)}</span>
+                  <span>Advance Given: {formatCurrency(item.totalAdvance)}</span>
                   <span>Balance: {formatCurrency(item.totalBalance)}</span>
                   <span>Total Rate: {formatCurrency(item.totalRate)}</span>
                 </div>
