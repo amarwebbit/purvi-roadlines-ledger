@@ -43,6 +43,7 @@ export default function Dashboard() {
 
   const stats = useMemo(() => {
     const totalRevenue = deliveries.reduce((sum, item) => sum + toNumber(item.rate), 0)
+    const totalCommission = deliveries.reduce((sum, item) => sum + toNumber(item.commission), 0)
     const pendingFromCompanies = deliveries.reduce(
       (sum, item) => sum + Math.max(toNumber(item.balance_from_company), 0),
       0
@@ -54,6 +55,7 @@ export default function Dashboard() {
 
     return {
       totalRevenue,
+      totalCommission,
       pendingFromCompanies,
       pendingToOwners,
     }
@@ -99,12 +101,13 @@ export default function Dashboard() {
 
   return (
     <div className="space-y-8">
-      <section className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
+      <section className="grid gap-4 md:grid-cols-2 xl:grid-cols-5">
         {[
           { label: 'Total Companies', value: companies.length },
           { label: 'Total Truck Owners', value: owners.length },
           { label: 'Total Deliveries', value: deliveries.length },
           { label: 'Total Revenue', value: formatCurrency(stats.totalRevenue) },
+          { label: 'Total Commission', value: formatCurrency(stats.totalCommission) },
         ].map((item) => (
           <div
             key={item.label}
