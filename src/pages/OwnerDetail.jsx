@@ -76,11 +76,40 @@ export default function OwnerDetail() {
     deliveries.forEach((item) => {
       const companyId = item.transport_company_id
       if (!map[companyId]) {
-        map[companyId] = { name: item.transport_companies?.name || '-', count: 0, id: companyId }
+        map[companyId] = {
+          name: item.transport_companies?.name || '-',
+          count: 0,
+          id: companyId,
+          totalRate: 0,
+          totalAdvance: 0,
+          totalBalance: 0,
+          totalNet: 0,
+        }
       }
       map[companyId].count += 1
+      map[companyId].totalRate += toNumber(item.rate)
+      map[companyId].totalAdvance += toNumber(item.advance_to_owner)
+      map[companyId].totalBalance += Math.max(toNumber(item.balance_to_owner), 0)
+      map[companyId].totalNet += Math.max(
+        toNumber(item.rate) - toNumber(item.commission) - toNumber(item.munsiyana),
+        0
+      )
     })
     return Object.values(map)
+  }, [deliveries])
+
+  const statusBreakdown = useMemo(() => {
+    const breakdown = {
+      pending: { count: 0, amount: 0 },
+      partial: { count: 0, amount: 0 },
+      completed: { count: 0, amount: 0 },
+    }
+    deliveries.forEach((item) => {
+      const key = item.owner_payment_status || 'pending'
+      breakdown[key].count += 1
+      breakdown[key].amount += Math.max(toNumber(item.balance_to_owner), 0)
+    })
+    return breakdown
   }, [deliveries])
 
   const markNoDues = async (delivery) => {
@@ -213,7 +242,7 @@ export default function OwnerDetail() {
           <div className="flex items-center justify-between">
             <div>
               <p className="text-xs uppercase tracking-[0.2em] text-slate-300">Companies Served</p>
-              <p className="text-lg font-semibold text-white">Usage Breakdown</p>
+              <p className="text-lg font-semibold text-white">Trips Grouped by Company</p>
             </div>
             <button
               type="button"
@@ -226,14 +255,44 @@ export default function OwnerDetail() {
           <div className="mt-4 space-y-3">
             {companiesServed.length === 0 && <p className="text-sm text-slate-300">No companies yet.</p>}
             {companiesServed.map((item) => (
-              <div key={item.id} className="flex items-center justify-between rounded-xl bg-white/5 px-4 py-3">
-                <Link className="text-sky-300 hover:text-sky-200" to={`/companies/${item.id}`}>
-                  {item.name}
-                </Link>
-                <span className="text-sm text-slate-200">{item.count} trips</span>
+              <div key={item.id} className="rounded-xl bg-white/5 px-4 py-3">
+                <div className="flex items-center justify-between">
+                  <Link className="text-sky-300 hover:text-sky-200" to={`/companies/${item.id}`}>
+                    {item.name}
+                  </Link>
+                  <span className="text-sm text-slate-200">{item.count} trips</span>
+                </div>
+                <div className="mt-2 grid gap-2 text-xs text-slate-300 sm:grid-cols-2">
+                  <span>Total Net: {formatCurrency(item.totalNet)}</span>
+                  <span>Advance: {formatCurrency(item.totalAdvance)}</span>
+                  <span>Balance: {formatCurrency(item.totalBalance)}</span>
+                  <span>Total Rate: {formatCurrency(item.totalRate)}</span>
+                </div>
               </div>
             ))}
           </div>
+        </div>
+      </section>
+
+      <section className="rounded-2xl bg-white/10 p-5">
+        <div className="flex items-center justify-between">
+          <div>
+            <p className="text-xs uppercase tracking-[0.2em] text-slate-300">Outstanding Balance</p>
+            <p className="text-lg font-semibold text-white">Status Breakdown</p>
+          </div>
+        </div>
+        <div className="mt-4 grid gap-3 md:grid-cols-3">
+          {[
+            { label: 'Pending', data: statusBreakdown.pending, color: 'text-rose-200' },
+            { label: 'Partial', data: statusBreakdown.partial, color: 'text-amber-200' },
+            { label: 'No Dues', data: statusBreakdown.completed, color: 'text-emerald-200' },
+          ].map((item) => (
+            <div key={item.label} className="rounded-xl bg-white/5 px-4 py-3">
+              <p className={`text-xs uppercase tracking-[0.2em] ${item.color}`}>{item.label}</p>
+              <p className="mt-2 text-lg font-semibold text-white">{formatCurrency(item.data.amount)}</p>
+              <p className="text-xs text-slate-300">{item.data.count} trips</p>
+            </div>
+          ))}
         </div>
       </section>
 

@@ -17,6 +17,7 @@ export default function CompanyDetail() {
   const [company, setCompany] = useState(null)
   const [deliveries, setDeliveries] = useState([])
   const [loading, setLoading] = useState(true)
+  const [ownerFilter, setOwnerFilter] = useState('')
 
   const loadData = async () => {
     setLoading(true)
@@ -51,7 +52,9 @@ export default function CompanyDetail() {
       (sum, item) => sum + Math.max(toNumber(item.balance_from_company), 0),
       0
     )
-    return { totalBilled, totalAdvance, totalBalance }
+    const totalCommission = deliveries.reduce((sum, item) => sum + toNumber(item.commission), 0)
+    const totalMunsiyana = deliveries.reduce((sum, item) => sum + toNumber(item.munsiyana), 0)
+    return { totalBilled, totalAdvance, totalBalance, totalCommission, totalMunsiyana }
   }, [deliveries])
 
   const pieData = useMemo(() => {
@@ -66,6 +69,20 @@ export default function CompanyDetail() {
       { name: 'Pending', value: counts.pending, key: 'pending' },
     ]
   }, [deliveries])
+
+  const ownerOptions = useMemo(() => {
+    const map = {}
+    deliveries.forEach((item) => {
+      if (!item.truck_owner_id) return
+      map[item.truck_owner_id] = item.truck_owners?.name || 'Owner'
+    })
+    return Object.entries(map).map(([key, value]) => ({ id: key, name: value }))
+  }, [deliveries])
+
+  const filteredDeliveries = useMemo(() => {
+    if (!ownerFilter) return deliveries
+    return deliveries.filter((item) => item.truck_owner_id === ownerFilter)
+  }, [deliveries, ownerFilter])
 
   const markNoDues = async (deliveryId, rate) => {
     const { error } = await supabase
@@ -87,7 +104,7 @@ export default function CompanyDetail() {
 
   const handleExport = () => {
     if (!company) return
-    const rows = deliveries.map((item) => ({
+    const rows = filteredDeliveries.map((item) => ({
       Date: formatDate(item.delivery_date),
       Route: `${item.from_location} → ${item.to_location}`,
       'Truck Owner': item.truck_owners?.name || '-',
@@ -121,11 +138,13 @@ export default function CompanyDetail() {
         <p className="mt-2 text-xs text-slate-400">{company.address || 'Address not added'}</p>
       </div>
 
-      <section className="grid gap-4 md:grid-cols-3">
+      <section className="grid gap-4 md:grid-cols-3 xl:grid-cols-5">
         {[
           { label: 'Total Billed', value: formatCurrency(summary.totalBilled) },
           { label: 'Advance Received', value: formatCurrency(summary.totalAdvance) },
           { label: 'Balance Pending', value: formatCurrency(summary.totalBalance) },
+          { label: 'Total Commission', value: formatCurrency(summary.totalCommission) },
+          { label: 'Total Munsiyana', value: formatCurrency(summary.totalMunsiyana) },
         ].map((item) => (
           <div key={item.label} className="rounded-2xl bg-white/10 p-5 shadow-lg">
             <p className="text-xs uppercase tracking-[0.2em] text-slate-300">{item.label}</p>
@@ -164,13 +183,27 @@ export default function CompanyDetail() {
               <p className="text-xs uppercase tracking-[0.2em] text-slate-300">Deliveries</p>
               <p className="text-lg font-semibold text-white">All Trips</p>
             </div>
-            <button
-              type="button"
-              onClick={handleExport}
-              className="rounded-xl bg-white/20 px-4 py-2 text-xs font-semibold text-white"
-            >
-              Export to Excel
-            </button>
+            <div className="flex flex-wrap items-center gap-3">
+              <select
+                value={ownerFilter}
+                onChange={(e) => setOwnerFilter(e.target.value)}
+                className="rounded-xl border border-white/20 bg-white/10 px-3 py-2 text-xs text-white"
+              >
+                <option value="">All Owners</option>
+                {ownerOptions.map((owner) => (
+                  <option key={owner.id} value={owner.id}>
+                    {owner.name}
+                  </option>
+                ))}
+              </select>
+              <button
+                type="button"
+                onClick={handleExport}
+                className="rounded-xl bg-white/20 px-4 py-2 text-xs font-semibold text-white"
+              >
+                Export to Excel
+              </button>
+            </div>
           </div>
           <div className="mt-4 overflow-x-auto">
             <table className="min-w-full text-sm text-slate-200">
@@ -190,14 +223,14 @@ export default function CompanyDetail() {
                 </tr>
               </thead>
               <tbody>
-                {deliveries.length === 0 && (
+                {filteredDeliveries.length === 0 && (
                   <tr>
                     <td colSpan="11" className="py-4 text-center text-slate-400">
                       No deliveries yet.
                     </td>
                   </tr>
                 )}
-                {deliveries.map((item) => (
+                {filteredDeliveries.map((item) => (
                   <tr key={item.id} className="border-t border-white/10">
                     <td className="py-3">{formatDate(item.delivery_date)}</td>
                     <td className="py-3">
