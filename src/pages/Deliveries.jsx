@@ -80,7 +80,10 @@ export default function Deliveries() {
 
   const saveEdit = async () => {
     if (!editing) return
-    const ownerRate = Math.max(toNumber(editing.rate) - toNumber(editing.commission), 0)
+    const ownerRate = Math.max(
+      toNumber(editing.rate) - toNumber(editing.commission) - toNumber(editing.munsiyana),
+      0
+    )
     const ownerCalc = computeBalanceAndStatus(ownerRate, editForm.advance_to_owner)
     const companyCalc = computeBalanceAndStatus(editing.rate, editForm.advance_from_company)
 
@@ -106,7 +109,10 @@ export default function Deliveries() {
   }
 
   const markNoDuesOwner = async (delivery) => {
-    const ownerRate = Math.max(toNumber(delivery.rate) - toNumber(delivery.commission), 0)
+    const ownerRate = Math.max(
+      toNumber(delivery.rate) - toNumber(delivery.commission) - toNumber(delivery.munsiyana),
+      0
+    )
     const { error } = await supabase
       .from('deliveries')
       .update({
@@ -388,7 +394,13 @@ export default function Deliveries() {
                 <span>
                   Owner balance:{' '}
                   {formatCurrency(
-                    Math.max(toNumber(editing.rate) - toNumber(editing.commission) - toNumber(editForm.advance_to_owner), 0)
+                    Math.max(
+                      toNumber(editing.rate) -
+                        toNumber(editing.commission) -
+                        toNumber(editing.munsiyana) -
+                        toNumber(editForm.advance_to_owner),
+                      0
+                    )
                   )}
                 </span>
                 <span>

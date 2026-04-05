@@ -23,6 +23,7 @@ export default function NewDelivery() {
   const [newCompany, setNewCompany] = useState(initialCompany)
   const [newOwner, setNewOwner] = useState(initialOwner)
   const [commissionEdited, setCommissionEdited] = useState(false)
+  const [munsiyanaEdited, setMunsiyanaEdited] = useState(false)
 
   const [form, setForm] = useState({
     delivery_date: new Date().toISOString().slice(0, 10),
@@ -68,10 +69,11 @@ export default function NewDelivery() {
     () => {
       const rateNum = toNumber(form.rate)
       const commissionNum = toNumber(form.commission)
-      const ownerRate = Math.max(rateNum - commissionNum, 0)
+      const munsiyanaNum = toNumber(form.munsiyana)
+      const ownerRate = Math.max(rateNum - commissionNum - munsiyanaNum, 0)
       return computeBalanceAndStatus(ownerRate, form.advance_to_owner)
     },
-    [form.rate, form.commission, form.advance_to_owner]
+    [form.rate, form.commission, form.munsiyana, form.advance_to_owner]
   )
 
   const companyCalc = useMemo(
@@ -89,12 +91,13 @@ export default function NewDelivery() {
 
     const rateNum = toNumber(form.rate)
     const commissionNum = toNumber(form.commission)
+    const munsiyanaNum = toNumber(form.munsiyana)
     if (rateNum <= 0) {
       toast.error('Rate should be greater than 0')
       return
     }
 
-    const ownerRate = Math.max(rateNum - commissionNum, 0)
+    const ownerRate = Math.max(rateNum - commissionNum - munsiyanaNum, 0)
 
     setLoading(true)
     const payload = {
@@ -142,6 +145,7 @@ export default function NewDelivery() {
       notes: '',
     })
     setCommissionEdited(false)
+    setMunsiyanaEdited(false)
     setLoading(false)
   }
 
@@ -312,6 +316,7 @@ export default function NewDelivery() {
                   ...prev,
                   rate: value,
                   commission: commissionEdited ? prev.commission : rateNum > 0 ? Math.min(500, rateNum) : '',
+                  munsiyana: munsiyanaEdited ? prev.munsiyana : rateNum > 0 ? Math.min(250, rateNum) : '',
                 }))
               }}
               className="mt-2 w-full rounded-xl border border-slate-200 bg-white/80 px-4 py-3 text-slate-900"
@@ -339,7 +344,10 @@ export default function NewDelivery() {
               type="number"
               min="0"
               value={form.munsiyana}
-              onChange={(e) => setForm((prev) => ({ ...prev, munsiyana: e.target.value }))}
+              onChange={(e) => {
+                setMunsiyanaEdited(true)
+                setForm((prev) => ({ ...prev, munsiyana: e.target.value }))
+              }}
               className="mt-2 w-full rounded-xl border border-slate-200 bg-white/80 px-4 py-3 text-slate-900"
               placeholder="0"
             />

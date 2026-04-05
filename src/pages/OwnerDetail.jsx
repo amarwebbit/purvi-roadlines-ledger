@@ -46,7 +46,8 @@ export default function OwnerDetail() {
 
   const summary = useMemo(() => {
     const totalEarnings = deliveries.reduce(
-      (sum, item) => sum + Math.max(toNumber(item.rate) - toNumber(item.commission), 0),
+      (sum, item) =>
+        sum + Math.max(toNumber(item.rate) - toNumber(item.commission) - toNumber(item.munsiyana), 0),
       0
     )
     const totalAdvance = deliveries.reduce((sum, item) => sum + toNumber(item.advance_to_owner), 0)
@@ -83,7 +84,10 @@ export default function OwnerDetail() {
   }, [deliveries])
 
   const markNoDues = async (delivery) => {
-    const ownerRate = Math.max(toNumber(delivery.rate) - toNumber(delivery.commission), 0)
+    const ownerRate = Math.max(
+      toNumber(delivery.rate) - toNumber(delivery.commission) - toNumber(delivery.munsiyana),
+      0
+    )
     const { error } = await supabase
       .from('deliveries')
       .update({
@@ -107,7 +111,10 @@ export default function OwnerDetail() {
       supabase
         .from('deliveries')
         .update({
-          advance_to_owner: Math.max(toNumber(item.rate) - toNumber(item.commission), 0),
+          advance_to_owner: Math.max(
+            toNumber(item.rate) - toNumber(item.commission) - toNumber(item.munsiyana),
+            0
+          ),
           balance_to_owner: 0,
           owner_payment_status: 'completed',
         })
