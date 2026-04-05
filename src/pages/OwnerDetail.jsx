@@ -51,7 +51,8 @@ export default function OwnerDetail() {
       (sum, item) => sum + Math.max(toNumber(item.balance_to_owner), 0),
       0
     )
-    return { totalTripsAmount, totalAdvance, totalBalance }
+    const totalCommissionEarned = deliveries.reduce((sum, item) => sum + toNumber(item.commission), 0)
+    return { totalTripsAmount, totalAdvance, totalBalance, totalCommissionEarned }
   }, [deliveries])
 
   const pieData = useMemo(() => {
@@ -190,11 +191,12 @@ export default function OwnerDetail() {
         <p className="mt-2 text-xs text-slate-400">{owner.address || 'Address not added'}</p>
       </div>
 
-      <section className="grid gap-4 md:grid-cols-3">
+      <section className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
         {[
           { label: 'Total Trip Amount', value: formatCurrency(summary.totalTripsAmount) },
           { label: 'Advance Given', value: formatCurrency(summary.totalAdvance) },
           { label: 'Balance Remaining', value: formatCurrency(summary.totalBalance) },
+          { label: 'Commission Earned', value: formatCurrency(summary.totalCommissionEarned) },
         ].map((item) => (
           <div key={item.label} className="rounded-2xl bg-white/10 p-5 shadow-lg">
             <p className="text-xs uppercase tracking-[0.2em] text-slate-300">{item.label}</p>
